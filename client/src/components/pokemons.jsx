@@ -1,10 +1,11 @@
 import React from "react";
 import Card from "./card.jsx";
-function Pokemons({ data }) {
+
+function Pokemons({ data, user }) {
   return (
-    <div className="h-full  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-h-full overflow-hidden">
+    <div className="h-fit grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-auto">
       {data.map((value) => (
-        <Card key={value.id} data={value} />
+        <Card key={value.id} data={value} user={user} />
       ))}
     </div>
   );

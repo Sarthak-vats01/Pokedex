@@ -1,4 +1,5 @@
 import pokedexModel from "../model/model.js";
+import userModel from "../model/user.js";
 
 async function addPokemon(req, res) {
   console.log(`Add Pokemon initiated`);
@@ -55,33 +56,45 @@ async function statusPokemon(req, res) {
   console.log("pokemon status changing...");
 
   try {
-    const { id, captured } = req.body;
+    const { id, userId, captured } = req.body;
 
     // Validate input
-    if (!id || captured === undefined) {
-      console.log("Invalid or missing input value", id, captured);
+    if (!id || !userId || captured == null) {
+      console.log("Invalid or missing input value", { id, captured, userId });
       return res
         .status(400)
         .send("Missing or invalid input while changing pokemon");
     }
 
-    // Find and update the Pokemon's captured status
-    const updatedPokemon = await pokedexModel.findOneAndUpdate(
-      { id: id },
-      { captured: captured },
-      { new: true }
-    );
+    // Find user by userId
+    const user = await userModel.findById(userId);
 
-    // If the Pokémon is not found, return 404
-    if (!updatedPokemon) {
-      console.log(`Pokemon with id ${id} not found`);
-      return res.status(404).send(`Pokemon not found`);
+    if (!user) {
+      console.log(`User with id ${userId} not found`);
+      return res.status(400).json({ message: "User not found" });
     }
 
-    console.log(`Pokemon with id ${id} updated to captured = ${captured}`);
+    // Check if the Pokémon is already captured
+    const isCaptured = user.capturedPokemons.some(
+      (item) => item.pokemonId == id
+    );
 
-    // Send a success response
-    return res.status(200).json(updatedPokemon);
+    if (!isCaptured && captured) {
+      // If Pokémon is not captured and should be captured, add it
+      user.capturedPokemons.push({ pokemonId: id });
+    } else if (isCaptured && !captured) {
+      // If Pokémon is already captured but should be uncaptured, remove it
+      user.capturedPokemons = user.capturedPokemons.filter(
+        (item) => item.pokemonId != id
+      );
+    }
+
+    // Save user changes
+    const result = await user.save();
+    console.log(result);
+
+    // Send success response with updated capturedPokemons array
+    return res.status(200).json({ data: result.capturedPokemons });
   } catch (error) {
     console.log(`Error occurred in statusPokemon: ${error}`);
 

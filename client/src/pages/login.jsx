@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { signup, signin } from "../api/pokedex.js";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useDispatch } from "react-redux";
 
 function Auth() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ function Auth() {
   const [errorValue, setErrorValue] = useState("");
   const [showNotification, setShowNotification] = useState(true); // State to control notification visibility
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     // Auto-hide the notification after a few seconds
     const timer = setTimeout(() => setShowNotification(false), 10000);
@@ -23,7 +24,7 @@ function Auth() {
     e.preventDefault();
     setLoading(true); // Set loading to true
     try {
-      const userId = await signup({ username: email, password });
+      const userId = await signup({ username: email, password, dispatch });
       navigate(`homepage/${userId}`);
     } catch (error) {
       setSigningError(true);
@@ -38,7 +39,7 @@ function Auth() {
     e.preventDefault();
     setLoading(true); // Set loading to true
     try {
-      const userId = await signin({ username: email, password });
+      const userId = await signin({ username: email, password, dispatch });
       if (userId) {
         navigate(`/homepage/${userId}`);
       }

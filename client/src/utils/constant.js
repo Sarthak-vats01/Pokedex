@@ -1,2 +1,2 @@
-const serverURL = "https://pokedex-backend-6kl1.onrender.com";
+const serverURL = "http://localhost:8000";
 export { serverURL };

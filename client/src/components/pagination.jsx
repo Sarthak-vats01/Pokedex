@@ -2,7 +2,7 @@ import React from "react";
 
 const Pagination = ({ currentPage, totalPages, onNext, onPrevious }) => {
   return (
-    <div className="pagination-buttons flex justify-center items-center w-full mt-4 space-x-4">
+    <div className="pagination-buttons flex justify-center items-center w-full  space-x-4">
       <button
         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={onPrevious}

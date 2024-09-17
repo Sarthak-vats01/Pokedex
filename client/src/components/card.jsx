@@ -1,20 +1,27 @@
 import React, { useState } from "react";
 import { Switch, FormControlLabel } from "@mui/material";
 import { statusChange } from "../api/pokedex.js";
+import { useDispatch } from "react-redux";
 
-function Card({ data }) {
+function Card({ data, user }) {
   const [captured, setCaptured] = useState(data.captured || false);
+  const dispatch = useDispatch();
 
   async function handleStatusChange() {
     const newStatus = !captured;
     setCaptured(newStatus);
 
-    await statusChange({ id: data.id, status: newStatus });
+    await statusChange({
+      id: data.id,
+      status: newStatus,
+      userId: user,
+      dispatch,
+    });
   }
 
   return (
     <div className="bg-white shadow-lg rounded-sm p-4 text-center font-extralight">
-      <img src={data.imgUrl} alt="Pikachu" className="h-24 w-24 mx-auto" />
+      <img src={data.imgUrl} alt="Pikachu" className="h-16 w-16 mx-auto" />
       <h2 className="text-xl text-gray-600 ">{data.name}</h2>
       <p className="text-gray-400">{data.pokemonTypes} </p>
 

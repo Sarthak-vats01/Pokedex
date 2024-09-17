@@ -19,7 +19,7 @@ async function signup(req, res) {
 
     const newUser = new userModel({ username, password: hashedPassword });
 
-    await newUser.save();
+    const result = await newUser.save();
 
     const token = jwt.sign(
       { id: newUser._id, username: newUser.username },
@@ -27,7 +27,9 @@ async function signup(req, res) {
       { expiresIn: "24h" }
     );
 
-    res.status(201).json({ userId: newUser._id, token });
+    res
+      .status(201)
+      .json({ userId: newUser._id, token, pokemons: result.capturedPokemons });
   } catch (error) {
     console.log("Error signing up", error);
     res.status(400).json({ error });
@@ -62,7 +64,11 @@ async function signin(req, res) {
       { expiresIn: "24h" }
     );
 
-    res.status(200).json({ userId: existingUser._id, token }); // Change status to 200 for successful login
+    res.status(200).json({
+      userId: existingUser._id,
+      token,
+      pokemons: existingUser.capturedPokemons,
+    }); // Change status to 200 for successful login
   } catch (error) {
     console.log("Error signing in", error);
     res.status(500).json({ error: "Server error" }); // Change status to 500 for server error
